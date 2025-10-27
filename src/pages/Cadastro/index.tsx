@@ -132,7 +132,6 @@ export default function Cadastro() {
           {erros.nomeCompleto && (
             <p style={{ color: "red" }}>{erros.nomeCompleto}</p>
           )}
-
           <Input
             label="E-mail"
             name="email"
