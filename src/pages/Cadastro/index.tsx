@@ -1,10 +1,16 @@
-import "./styles.css";
+import { useSearchParams } from "react-router";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { AnchorButton } from "../../components/AnchorButton";
 import { useState } from "react";
-
+import "./styles.css";
+import { useNavigate } from "react-router";
 export default function Cadastro() {
+  const navigate = useNavigate();
+  function goToResgistration() {
+    navigate("/");
+  }
+
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [email, setEmail] = useState("");
   const [confirmarEmail, setConfirmarEmail] = useState("");
@@ -20,18 +26,22 @@ export default function Cadastro() {
   }>({});
 
   // NOVO: Estado para gerenciar mensagens com tipo (sucesso ou erro)
+
   const [statusMensagem, setStatusMensagem] = useState<{
     text: string;
     type: "success" | "error" | "";
   }>({ text: "", type: "" });
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+])(?=.*[a-z]).{8,}$/;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatusMensagem({ text: "", type: "" }); // Limpa a mensagem ao submeter
 
+    console.log(email);
+    console.log("confimar:", confirmarEmail);
     const novosErros: typeof erros = {};
 
     // Validação Nome
@@ -51,7 +61,7 @@ export default function Cadastro() {
     // Validação Senha
     if (!passwordRegex.test(senha)) {
       novosErros.senha =
-        "A senha deve ter no mínimo 8 caracteres, conter pelo menos uma letra e um número"; // Mensagem mais clara
+        "A senha deve ter no mínimo 8 caracteres, conter pelo menos uma letra maiuscula e um úmero um caractere especial";
     }
     if (senha !== confirmarSenha) {
       novosErros.confirmarSenha = "Senhas não coincidem";
@@ -61,10 +71,17 @@ export default function Cadastro() {
 
     if (Object.keys(novosErros).length === 0) {
       try {
+        const nomeLower = nomeCompleto.toLowerCase();
+        const emailLower = email.toLowerCase();
+
         const response = await fetch("http://localhost:3000/api/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: nomeCompleto, email, password: senha }),
+          body: JSON.stringify({
+            name: nomeLower,
+            email: emailLower,
+            password: senha,
+          }),
         });
 
         const data = await response.json();
@@ -174,9 +191,10 @@ export default function Cadastro() {
 
           <Button label="Confirmar Cadastro" type="submit" />
 
-          <p>
-            Já tem uma conta? <AnchorButton name="Login" />
-          </p>
+          <div>
+            <span>Já tem uma conta?</span>
+            <AnchorButton onClick={goToResgistration} name="Login" />
+          </div>
         </form>
       </div>
     </div>

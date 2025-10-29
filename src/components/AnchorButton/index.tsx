@@ -1,17 +1,15 @@
 import "./styles.css";
 
-interface IProps {
+interface IProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   name: string;
 }
-export function AnchorButton(props: IProps) {
+export function AnchorButton({ name, ...props }: IProps) {
   return (
-    <div className="cadastro-link">
+    <div>
       <span>
-        
-          <a href="#" className="">
-            {props.name}
-          </a>
-        
+        <a href="#" {...props}>
+          {name}
+        </a>
       </span>
     </div>
   );
